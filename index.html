@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Welcome to chichi tap</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>Welcome to chichi tap</h1>
+            <div class="score-board">
+                <div class="score-item">
+                    <span>Score:</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="score-item">
+                    <span>High Score:</span>
+                    <span id="high-score">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div id="tap-area" class="tap-area">
+                <p id="instructions">Tap the square as fast as you can!</p>
+            </div>
+            <div class="game-info">
+                <button id="start-btn" class="btn">Start Game</button>
+                <button id="restart-btn" class="btn hidden">Play Again</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
