@@ -61,7 +61,57 @@ function handleTap(event) {
     // Create score animation
     createScoreAnimation(event.clientX, event.clientY);
     
+    // Create confetti effect
+    createConfetti(event.clientX, event.clientY);
+    
     // Removed moveSquareRandomly call to keep square fixed
+}
+
+// Confetti effect function
+function createConfetti(x, y) {
+    const colors = ['#FFC700', '#FF0000', '#2E3192', '#41BBC7', '#732982', '#FF69B4', '#00FF7F'];
+    const confettiCount = 30;
+    const confettiContainer = document.createElement('div');
+    confettiContainer.style.position = 'absolute';
+    confettiContainer.style.left = x + 'px';
+    confettiContainer.style.top = y + 'px';
+    confettiContainer.style.pointerEvents = 'none';
+    confettiContainer.style.zIndex = '1000';
+    document.body.appendChild(confettiContainer);
+
+    for (let i = 0; i < confettiCount; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.position = 'absolute';
+        confetti.style.width = `${Math.random() * 10 + 5}px`;
+        confetti.style.height = confetti.style.width;
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.borderRadius = `${Math.random() > 0.5 ? '50%' : '0'}`;
+        confetti.style.opacity = '1';
+        confetti.style.transform = `translate(0, 0) rotate(0deg)`;
+        confetti.style.filter = 'drop-shadow(0 0 2px rgba(0,0,0,0.2))';
+        confettiContainer.appendChild(confetti);
+
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = Math.random() * 150 + 75;
+        const xDest = Math.cos(angle) * distance;
+        const yDest = Math.sin(angle) * distance;
+
+        confetti.animate([
+            { transform: 'translate(0, 0) rotate(0deg)', opacity: 1 },
+            { transform: `translate(${xDest}px, ${yDest}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+        ], {
+            duration: 1200 + Math.random() * 800,
+            easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+            fill: 'forwards'
+        });
+
+        setTimeout(() => {
+            confetti.remove();
+            if (confettiContainer.childElementCount === 0) {
+                confettiContainer.remove();
+            }
+        }, 1800);
+    }
 }
 
 function createScoreAnimation(x, y) {
