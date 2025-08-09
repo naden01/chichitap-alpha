@@ -5,6 +5,14 @@ let gameActive = false;
 let gameDuration = 10000; // 10 seconds
 let gameTimer;
 
+// Array of meow sound files
+const meowSounds = [
+    'sounds/meow1.mp3',
+    'sounds/meow2.mp3',
+    'sounds/meow3.mp3',
+    'sounds/meow4.mp3'
+];
+
 // DOM elements
 const scoreElement = document.getElementById('score');
 const highScoreElement = document.getElementById('high-score');
@@ -57,6 +65,11 @@ function handleTap(event) {
     
     score++;
     updateScore();
+    
+    // Play random meow sound
+    const randomIndex = Math.floor(Math.random() * meowSounds.length);
+    const audio = new Audio(meowSounds[randomIndex]);
+    audio.play();
     
     // Create score animation
     createScoreAnimation(event.clientX, event.clientY);
