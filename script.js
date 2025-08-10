@@ -5,6 +5,11 @@ let gameActive = false;
 let gameDuration = 10000; // 10 seconds
 let gameTimer;
 
+// Audio variables
+let backgroundMusic = null;
+let musicVolume = localStorage.getItem('musicVolume') || 0.5;
+let isMusicPlaying = false;
+
 // Array of meow sound files
 const meowSounds = [
     'sounds/meow1.mp3',
@@ -20,13 +25,94 @@ const tapArea = document.getElementById('tap-area');
 const instructions = document.getElementById('instructions');
 const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
+const musicToggleBtn = document.getElementById('music-toggle');
+const musicVolumeSlider = document.getElementById('music-volume');
 
 // Initialize high score display
 highScoreElement.textContent = highScore;
 
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Initialize music
+function initMusic() {
+    backgroundMusic = new Audio('music/bg_music.mp3');
+    backgroundMusic.loop = true;
+    backgroundMusic.volume = musicVolume;
+    
+    // Set initial UI state
+    musicVolumeSlider.value = musicVolume;
+    updateMusicButtonStates();
+
+    // Update music time display as music plays
+    const musicTime = document.getElementById('music-time');
+    if (musicTime) {
+        backgroundMusic.addEventListener('timeupdate', () => {
+            const currentTimeFormatted = formatTime(backgroundMusic.currentTime);
+            musicTime.textContent = `${currentTimeFormatted}`;
+        });
+    }
+}
+
+// Update music button states
+function updateMusicButtonStates() {
+    musicToggleBtn.textContent = isMusicPlaying ? 'Pause Music' : 'Play Music';
+    
+    if (backgroundMusic) {
+        backgroundMusic.volume = musicVolume;
+    }
+}
+
+// Toggle music play/pause
+function toggleMusic() {
+    if (!backgroundMusic) return;
+    
+    if (isMusicPlaying) {
+        backgroundMusic.pause();
+        isMusicPlaying = false;
+    } else {
+        backgroundMusic.play().catch(e => {
+            console.log('Audio play failed:', e);
+            isMusicPlaying = false;
+        });
+        isMusicPlaying = true;
+    }
+    
+    updateMusicButtonStates();
+}
+
+// Update music volume
+function updateMusicVolume(volume) {
+    musicVolume = volume;
+    localStorage.setItem('musicVolume', musicVolume);
+    
+    if (backgroundMusic) {
+        backgroundMusic.volume = musicVolume;
+    }
+}
+
 // Event listeners
 startBtn.addEventListener('click', startGame);
 restartBtn.addEventListener('click', restartGame);
+musicToggleBtn.addEventListener('click', toggleMusic);
+musicVolumeSlider.addEventListener('input', (e) => updateMusicVolume(e.target.value));
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
+        e.preventDefault();
+        toggleMusic();
+    }
+});
 
 // Game functions
 function startGame() {
@@ -41,7 +127,14 @@ function startGame() {
     // Create tap square
     createTapSquare();
     
-    // Removed timer logic to allow game to end only when user leaves or restarts
+    // Start background music if not already playing
+    if (!isMusicPlaying && backgroundMusic) {
+        backgroundMusic.play().catch(e => {
+            console.log('Background music autoplay failed:', e);
+        });
+        isMusicPlaying = true;
+        updateMusicButtonStates();
+    }
 }
 
 function createTapSquare() {
@@ -69,6 +162,7 @@ function handleTap(event) {
     // Play random meow sound
     const randomIndex = Math.floor(Math.random() * meowSounds.length);
     const audio = new Audio(meowSounds[randomIndex]);
+    audio.volume = 0.7; // Play at fixed volume
     audio.play();
     
     // Create score animation
@@ -76,8 +170,6 @@ function handleTap(event) {
     
     // Create confetti effect
     createConfetti(event.clientX, event.clientY);
-    
-    // Removed moveSquareRandomly call to keep square fixed
 }
 
 // Confetti effect function
@@ -147,23 +239,14 @@ function createScoreAnimation(x, y) {
     }, 1000);
 }
 
-function moveSquareRandomly() {
-    const square = document.querySelector('.tap-square');
-    if (!square) return;
-    
-    const maxX = tapArea.clientWidth - 80;
-    const maxY = tapArea.clientHeight - 80;
-    
-    const randomX = Math.floor(Math.random() * maxX);
-    const randomY = Math.floor(Math.random() * maxY);
-    
-    square.style.position = 'absolute';
-    square.style.left = randomX + 'px';
-    square.style.top = randomY + 'px';
-}
-
 function updateScore() {
     scoreElement.textContent = score;
+    // Add bounce animation on score increase
+    scoreElement.classList.add('bounce-animation');
+    // Remove the animation class after animation ends to allow re-trigger
+    scoreElement.addEventListener('animationend', () => {
+        scoreElement.classList.remove('bounce-animation');
+    }, { once: true });
 }
 
 function endGame() {
@@ -208,4 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
         container.style.opacity = '1';
         container.style.transform = 'translateY(0)';
     }, 100);
+    
+    // Initialize music system
+    initMusic();
 });
