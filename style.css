@@ -23,8 +23,8 @@ body::before {
     position: fixed;
     top: 50%;
     left: 50%;
-    width: 200vw;
-    height: 200vh;
+    width: 250vw;
+    height: 250vh;
     background-image: url('chichi.png');
     background-size: contain;
     background-position: center;
