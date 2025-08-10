@@ -33,7 +33,7 @@ header {
 }
 
 h1 {
-    color: #667eea;
+   color: #6fdceb;
     margin-bottom: 1rem;
     font-size: 2.5rem;
 }
@@ -57,7 +57,7 @@ h1 {
 }
 
 .score-item span:first-child {
-    color: #667eea;
+    color: #6597e2;
 }
 
 /* Music Controls */
@@ -85,19 +85,10 @@ h1 {
     cursor: pointer;
 }
 
-#music-volume::-webkit-slider-thumb {
-    appearance: none;
-    width: 15px;
-    height: 15px;
-    background: #667eea;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
 #music-volume::-moz-range-thumb {
     width: 15px;
     height: 15px;
-    background: #667eea;
+    background: #7e5dda;
     border-radius: 50%;
     cursor: pointer;
     border: none;
@@ -140,7 +131,7 @@ h1 {
 }
 
 .btn {
-    background: linear-gradient(45deg, #667eea, #764ba2);
+    background: linear-gradient(45deg, #8999dd, #69e0e9);
     color: white;
     border: none;
     padding: 0.75rem 2rem;
@@ -254,34 +245,5 @@ h1 {
 
 #music-name {
     font-weight: bold;
-    color: #667eea;
-}
-
-#music-progress {
-    width: 200px;
-    height: 10px;
-    border-radius: 5px;
-    overflow: hidden;
-    appearance: none;
-    cursor: pointer;
-    background: #ddd;
-}
-
-#music-progress::-webkit-slider-thumb {
-    appearance: none;
-    width: 15px;
-    height: 15px;
-    background: #667eea;
-    border-radius: 50%;
-    cursor: pointer;
-    margin-top: -3px;
-}
-
-#music-progress::-moz-range-thumb {
-    width: 15px;
-    height: 15px;
-    background: #667eea;
-    border-radius: 50%;
-    cursor: pointer;
-    border: none;
+    color: #73c4b6;
 }
