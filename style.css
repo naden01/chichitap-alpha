@@ -74,7 +74,7 @@ h1 {
 
 #score {
     display: inline-block;
-    transition: transform 0.3s ease;
+    transition: transform 0.5s ease;
 }
 
 .score-item span:first-child {
@@ -179,11 +179,11 @@ h1 {
 
 .score-animation {
     position: absolute;
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     font-weight: bold;
-    color: #dbeb50;
+    color: #cfe419;
     pointer-events: none;
-    animation: scoreFloat 1s ease-out forwards;
+    animation: scoreFloat 1.5s ease-out forwards;
 }
 
 @keyframes scoreFloat {
@@ -193,7 +193,7 @@ h1 {
     }
     100% {
         opacity: 0;
-        transform: translateY(-50px);
+        transform: translateY(-100px);
     }
 }
 
