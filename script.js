@@ -182,7 +182,7 @@ function createConfetti(x, y) {
         'splash/uhh.png',
         'splash/abcd.png',
     ];
-    const confettiCount = 30;
+    const confettiCount = 20;
     const confettiContainer = document.createElement('div');
     confettiContainer.style.position = 'absolute';
     confettiContainer.style.left = x + 'px';
@@ -197,8 +197,8 @@ function createConfetti(x, y) {
         confetti.src = randomImage;
         confetti.alt = 'confetti';
         confetti.style.position = 'absolute';
-        confetti.style.width = `${Math.random() * 20 + 15}px`;
-        confetti.style.height = `${Math.random() * 20 + 15}px`;
+        confetti.style.width = `${Math.random() * 50 + 15}px`;
+        confetti.style.height = `${Math.random() * 25 + 15}px`;
         confetti.style.objectFit = 'contain';
         confetti.style.opacity = '1';
         confetti.style.transform = `translate(0, 0) rotate(0deg) scale(${Math.random() * 0.5 + 0.5})`;
@@ -216,7 +216,7 @@ confetti.style.filter = 'drop-shadow(0 0 2px rgba(0,0,0,0.2))';
             { transform: `translate(0, 0) rotate(0deg) scale(${scale})`, opacity: 1 },
             { transform: `translate(${xDest}px, ${yDest}px) rotate(${rotation}deg) scale(${scale * 0.5})`, opacity: 0 }
         ], {
-            duration: 1200 + Math.random() * 800,
+            duration: 1000 + Math.random() * 800,
             easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
             fill: 'forwards'
         });
