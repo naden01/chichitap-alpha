@@ -172,9 +172,16 @@ function handleTap(event) {
     createConfetti(event.clientX, event.clientY);
 }
 
-// Confetti effect function
+// Confetti effect function with random PNG images from splash folder
 function createConfetti(x, y) {
-    const colors = ['#FFC700', '#FF0000', '#2E3192', '#41BBC7', '#732982', '#FF69B4', '#00FF7F'];
+    const confettiImages = [
+        'splash/chichi.png',
+        'splash/muehehe.png',
+        'splash/thumbsup.png',
+        'splash/yeah.png',
+        'splash/uhh.png',
+        'splash/abcd.png',
+    ];
     const confettiCount = 30;
     const confettiContainer = document.createElement('div');
     confettiContainer.style.position = 'absolute';
@@ -185,25 +192,29 @@ function createConfetti(x, y) {
     document.body.appendChild(confettiContainer);
 
     for (let i = 0; i < confettiCount; i++) {
-        const confetti = document.createElement('div');
+        const confetti = document.createElement('img');
+        const randomImage = confettiImages[Math.floor(Math.random() * confettiImages.length)];
+        confetti.src = randomImage;
+        confetti.alt = 'confetti';
         confetti.style.position = 'absolute';
-        confetti.style.width = `${Math.random() * 10 + 5}px`;
-        confetti.style.height = confetti.style.width;
-        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.borderRadius = `${Math.random() > 0.5 ? '50%' : '0'}`;
+        confetti.style.width = `${Math.random() * 20 + 15}px`;
+        confetti.style.height = `${Math.random() * 20 + 15}px`;
+        confetti.style.objectFit = 'contain';
         confetti.style.opacity = '1';
-        confetti.style.transform = `translate(0, 0) rotate(0deg)`;
-        confetti.style.filter = 'drop-shadow(0 0 2px rgba(0,0,0,0.2))';
+        confetti.style.transform = `translate(0, 0) rotate(0deg) scale(${Math.random() * 0.5 + 0.5})`;
+confetti.style.filter = 'drop-shadow(0 0 2px rgba(0,0,0,0.2))';
         confettiContainer.appendChild(confetti);
 
         const angle = Math.random() * 2 * Math.PI;
         const distance = Math.random() * 150 + 75;
         const xDest = Math.cos(angle) * distance;
         const yDest = Math.sin(angle) * distance;
+        const rotation = Math.random() * 720;
+        const scale = Math.random() * 0.5 + 0.5;
 
         confetti.animate([
-            { transform: 'translate(0, 0) rotate(0deg)', opacity: 1 },
-            { transform: `translate(${xDest}px, ${yDest}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+            { transform: `translate(0, 0) rotate(0deg) scale(${scale})`, opacity: 1 },
+            { transform: `translate(${xDest}px, ${yDest}px) rotate(${rotation}deg) scale(${scale * 0.5})`, opacity: 0 }
         ], {
             duration: 1200 + Math.random() * 800,
             easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
