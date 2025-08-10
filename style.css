@@ -18,6 +18,27 @@ body {
     overflow: hidden;
 }
 
+body::before {
+    content: '';
+    position: fixed;
+    top: 1;
+    left: 1;
+    width: 245%;
+    height: 245%;
+    background-image: url('../chichi.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+        /* filter: blur(10px); */
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .game-container {
     background: white;
     border-radius: 20px;

@@ -139,7 +139,7 @@ function startGame() {
 
 function createTapSquare() {
     const tapSquare = document.createElement('img');
-    tapSquare.src = 'chichi.png';
+    tapSquare.src = 'splash/chichi.png';
     tapSquare.alt = 'Tap Image';
     tapSquare.className = 'tap-square';
     tapSquare.addEventListener('click', handleTap);
