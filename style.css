@@ -47,6 +47,7 @@ body::before {
     max-width: 500px;
     width: 90%;
     text-align: center;
+    max-width: 100%;
 }
 
 header {
@@ -226,7 +227,7 @@ h1 {
     }
     
     h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
     
     .score-board {
@@ -242,6 +243,22 @@ h1 {
     .music-controls .btn {
         font-size: 0.8rem;
         padding: 0.4rem 0.8rem;
+    }
+
+    .music-footer {
+        bottom: 0;
+        width: 100%;
+    }
+
+    .tap-square {
+        width: 130px;
+        height: 130px;
+    }
+
+    .tap-area {
+        padding: 1rem;
+        margin: 1rem 0;
+        min-height: 150px;
     }
 }
 
