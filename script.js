@@ -182,7 +182,7 @@ function createConfetti(x, y) {
         'splash/uhh.png',
         'splash/abcd.png',
     ];
-    const confettiCount = 10;
+    const confettiCount = 20;
     const confettiContainer = document.createElement('div');
     confettiContainer.style.position = 'absolute';
     confettiContainer.style.left = x + 'px';
@@ -197,8 +197,8 @@ function createConfetti(x, y) {
         confetti.src = randomImage;
         confetti.alt = 'confetti';
         confetti.style.position = 'absolute';
-        confetti.style.width = `${Math.random() * 70 + 20}px`;
-        confetti.style.height = `${Math.random() * 50 + 15}px`;
+        confetti.style.width = `${Math.random() * 50 + 15}px`;
+        confetti.style.height = `${Math.random() * 25 + 15}px`;
         confetti.style.objectFit = 'contain';
         confetti.style.opacity = '1';
         confetti.style.transform = `translate(0, 0) rotate(0deg) scale(${Math.random() * 0.5 + 0.5})`;
