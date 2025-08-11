@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,6 +8,7 @@
     <link rel="icon" href="splash/chichi.png" type="image/png" />
     <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
     <div class="game-container">
         <header>
@@ -19,7 +21,10 @@
                 <div class="score-item">
                     <span>High Score:</span>
                     <span id="high-score">0</span>
-                </div>
+                </div class>
+                <button id="settings-btn" class="settings-btn" title="Change Tap Image">
+                    ⚙️
+                </button>
             </div>
             <!-- Music Controls -->
             <div class="music-controls">
@@ -45,6 +50,53 @@
         </div>
     </footer>
 
+    <!-- Image Selection Modal -->
+    <div id="image-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Choose Tap Image</h2>
+            <div class="image-grid">
+                <div class="image-option" data-image="splash/chichi.png">
+                    <img src="splash/chichi.png" alt="Chichi" class="preview-image">
+                    <span>Chichi</span>
+                </div>
+                <div class="image-option" data-image="splash/chichi1.png">
+                    <img src="splash/chichi1.png" alt="Chichi 1" class="preview-image">
+                    <span>chichi staring</span>
+                </div>
+                <div class="image-option" data-image="chichi.png">
+                    <img src="chichi.png" alt="Chichi PNG" class="preview-image">
+                    <span>Chichi PNG</span>
+                </div>
+                <div class="image-option" data-image="splash/muehehe.png">
+                    <img src="splash/muehehe.png" alt="Muehehe" class="preview-image">
+                    <span>Muehehe</span>
+                </div>
+                <div class="image-option" data-image="splash/Watercatlon.png">
+                    <img src="splash/watercatlon.png" alt="Watercatlon" class="preview-image">
+                    <span>Watercatlon</span>
+                </div>
+                <div class="image-option" data-image="splash/thumbsup.png">
+                    <img src="splash/thumbsup.png" alt="Thumbs Up" class="preview-image">
+                    <span>Thumbs Up</span>
+                </div>
+                <div class="image-option" data-image="splash/yeah.png">
+                    <img src="splash/yeah.png" alt="Yeah" class="preview-image">
+                    <span>Yeah</span>
+                </div>
+                <div class="image-option" data-image="splash/uhh.png">
+                    <img src="splash/uhh.png" alt="Uhh" class="preview-image">
+                    <span>Uhh</span>
+                </div>
+                <div class="image-option" data-image="splash/abcd.png">
+                    <img src="splash/abcd.png" alt="ABCD" class="preview-image">
+                    <span>ABCD</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
+
 </html>

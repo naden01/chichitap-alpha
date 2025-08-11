@@ -5,6 +5,9 @@ let gameActive = false;
 let gameDuration = 10000; // 10 seconds
 let gameTimer;
 
+// Image selection variables
+let selectedTapImage = localStorage.getItem('selectedTapImage') || 'splash/chichi.png';
+
 // Audio variables
 let backgroundMusic = null;
 let musicVolume = localStorage.getItem('musicVolume') || 0.5;
@@ -139,7 +142,7 @@ function startGame() {
 
 function createTapSquare() {
     const tapSquare = document.createElement('img');
-    tapSquare.src = 'splash/chichi.png';
+    tapSquare.src = selectedTapImage;
     tapSquare.alt = 'Tap Image';
     tapSquare.className = 'tap-square';
     tapSquare.addEventListener('click', handleTap);
@@ -305,4 +308,38 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize music system
     initMusic();
+
+    // Settings modal elements
+    const settingsBtn = document.getElementById('settings-btn');
+    const imageModal = document.getElementById('image-modal');
+    const closeModalBtn = imageModal.querySelector('.close');
+    const imageOptions = imageModal.querySelectorAll('.image-option');
+
+    // Open modal on settings button click
+    settingsBtn.addEventListener('click', () => {
+        imageModal.style.display = 'block';
+    });
+
+    // Close modal on close button click
+    closeModalBtn.addEventListener('click', () => {
+        imageModal.style.display = 'none';
+    });
+
+    // Close modal when clicking outside modal content
+    window.addEventListener('click', (event) => {
+        if (event.target === imageModal) {
+            imageModal.style.display = 'none';
+        }
+    });
+
+    // Handle image selection
+    imageOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            const selectedImage = option.getAttribute('data-image');
+            selectedTapImage = selectedImage;
+            localStorage.setItem('selectedTapImage', selectedTapImage);
+            createTapSquare();
+            imageModal.style.display = 'none';
+        });
+    });
 });
