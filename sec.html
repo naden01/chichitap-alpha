@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>watercatlon</title>
+    <link rel="icon" href="splash/chichi.png" type="image/png" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        .video-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            max-width: 800px;
+            width: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .credit {
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="back-button" onclick="goBack()">← Back</button>
+
+    <div class="video-container">
+        <div>
+            <div class="video-wrapper">
+                <video controls autoplay muted loop>
+                    <source src="music/watercatmelon.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <!-- credit -->
+    <div class="credit">
+        <a href="https://www.instagram.com/reel/DNLzWMFJbRf/?utm_source=ig_web_copy_link">ayosussymustard67</a>
+    </div>
+    <script>
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        // play and pause
+        document.addEventListener('DOMContentLoaded', function () {
+            const video = document.querySelector('video');
+
+            document.addEventListener('keydown', function (e) {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    if (video.paused) {
+                        video.play();
+                    } else {
+                        video.pause();
+                    }
+                }
+            });
+        });
+    </script>
+
+</html>
