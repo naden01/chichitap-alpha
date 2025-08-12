@@ -1,0 +1,91 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('chichi.png') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    position: relative;
+    overflow: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 250vw;
+    height: 250vh;
+    background-image: url('chichi.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+    transform: translate(-50%, -50%);
+    animation: spin 2.8s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+.h1-con {
+    padding-bottom: 65%;
+    padding-top: 35px;
+    width: 250vw;
+    height: 250vh;
+}
+
+.h1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #363333;
+}
+
+.h2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #363333;
+    line-height: 35px;
+}
+
+a {
+  all: unset;
+}
+
+/* back button */
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}

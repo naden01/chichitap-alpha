@@ -44,13 +44,13 @@ body::before {
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     padding: 2rem;
-    max-width: 500px;
-    width: 90%;
+    top: 90%;
+    left: 10%;
     text-align: center;
 }
 
 header {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 h1 {
@@ -277,7 +277,7 @@ a {
     font-size: 18px;
     font-weight: bold;
     color: #78abee;
-    transition: color 0.2s ease, text-decoration 0.3s ease;
+    transition: color 0.1s ease, text-decoration 0.2s ease;
 }
 
     #credit:hover {
