@@ -51,7 +51,7 @@ function initMusic() {
     backgroundMusic = new Audio('music/bg_music.mp3');
     backgroundMusic.loop = true;
     backgroundMusic.volume = musicVolume;
-    
+
     // Set initial UI state
     musicVolumeSlider.value = musicVolume;
     updateMusicButtonStates();
@@ -69,7 +69,7 @@ function initMusic() {
 // Update music button states
 function updateMusicButtonStates() {
     musicToggleBtn.textContent = isMusicPlaying ? 'Pause Music' : 'Play Music';
-    
+
     if (backgroundMusic) {
         backgroundMusic.volume = musicVolume;
     }
@@ -78,7 +78,7 @@ function updateMusicButtonStates() {
 // Toggle music play/pause
 function toggleMusic() {
     if (!backgroundMusic) return;
-    
+
     if (isMusicPlaying) {
         backgroundMusic.pause();
         isMusicPlaying = false;
@@ -89,7 +89,7 @@ function toggleMusic() {
         });
         isMusicPlaying = true;
     }
-    
+
     updateMusicButtonStates();
 }
 
@@ -97,7 +97,7 @@ function toggleMusic() {
 function updateMusicVolume(volume) {
     musicVolume = volume;
     localStorage.setItem('musicVolume', musicVolume);
-    
+
     if (backgroundMusic) {
         backgroundMusic.volume = musicVolume;
     }
@@ -122,14 +122,14 @@ function startGame() {
     score = 0;
     gameActive = true;
     updateScore();
-    
+
     // Hide start button and show instructions
     startBtn.classList.add('hidden');
     instructions.textContent = 'Tap the square! Tap as much as you want!';
-    
+
     // Create tap square
     createTapSquare();
-    
+
     // Start background music if not already playing
     if (!isMusicPlaying && backgroundMusic) {
         backgroundMusic.play().catch(e => {
@@ -146,11 +146,11 @@ function createTapSquare() {
     tapSquare.alt = 'Tap Image';
     tapSquare.className = 'tap-square';
     tapSquare.addEventListener('click', handleTap);
-    
+
     // Clear tap area and add image
     tapArea.innerHTML = '';
     tapArea.appendChild(tapSquare);
-    
+
     // Add active styling
     tapArea.classList.add('game-active');
     tapArea.classList.remove('game-over');
@@ -158,19 +158,19 @@ function createTapSquare() {
 
 function handleTap(event) {
     if (!gameActive) return;
-    
+
     score++;
     updateScore();
-    
+
     // Play random meow sound
     const randomIndex = Math.floor(Math.random() * meowSounds.length);
     const audio = new Audio(meowSounds[randomIndex]);
     audio.volume = 0.7; // Play at fixed volume
     audio.play();
-    
+
     // Create score animation
     createScoreAnimation(event.clientX, event.clientY);
-    
+
     // Create confetti effect
     createConfetti(event.clientX, event.clientY);
 }
@@ -205,7 +205,7 @@ function createConfetti(x, y) {
         confetti.style.objectFit = 'contain';
         confetti.style.opacity = '1';
         confetti.style.transform = `translate(0, 0) rotate(0deg) scale(${Math.random() * 0.5 + 0.5})`;
-confetti.style.filter = 'drop-shadow(0 0 2px rgba(0,0,0,0.2))';
+        confetti.style.filter = 'drop-shadow(0 0 2px rgba(0,0,0,0.2))';
         confettiContainer.appendChild(confetti);
 
         const angle = Math.random() * 2 * Math.PI;
@@ -237,14 +237,14 @@ function createScoreAnimation(x, y) {
     const animation = document.createElement('div');
     animation.className = 'score-animation';
     animation.textContent = '+1';
-    
+
     // Position animation at tap location
     const rect = tapArea.getBoundingClientRect();
     animation.style.left = (x - rect.left) + 'px';
     animation.style.top = (y - rect.top) + 'px';
-    
+
     tapArea.appendChild(animation);
-    
+
     // Remove animation after it completes
     setTimeout(() => {
         if (animation.parentNode) {
@@ -265,14 +265,14 @@ function updateScore() {
 
 function endGame() {
     gameActive = false;
-    
+
     // Update high score if current score is higher
     if (score > highScore) {
         highScore = score;
         highScoreElement.textContent = highScore;
         localStorage.setItem('highScore', highScore);
     }
-    
+
     // Update UI
     tapArea.innerHTML = `
         <div>
@@ -281,10 +281,10 @@ function endGame() {
             ${score === highScore ? '<p style="color: #28a745; font-weight: bold;">New High Score!</p>' : ''}
         </div>
     `;
-    
+
     tapArea.classList.remove('game-active');
     tapArea.classList.add('game-over');
-    
+
     // Show restart button
     restartBtn.classList.remove('hidden');
 }
@@ -300,12 +300,12 @@ document.addEventListener('DOMContentLoaded', () => {
     container.style.opacity = '0';
     container.style.transform = 'translateY(20px)';
     container.style.transition = 'all 0.5s ease';
-    
+
     setTimeout(() => {
         container.style.opacity = '1';
         container.style.transform = 'translateY(0)';
     }, 100);
-    
+
     // Initialize music system
     initMusic();
 
