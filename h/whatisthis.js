@@ -188,6 +188,35 @@ window.addEventListener('keyup', e => {
     keys[e.key.toLowerCase()] = false;
 });
 
+// Touch and mobile controls
+let touchX = null;
+let touchY = null;
+let isTouching = false;
+
+canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    touchX = e.touches[0].clientX - rect.left;
+    touchY = e.touches[0].clientY - rect.top;
+    isTouching = true;
+});
+canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    touchX = e.touches[0].clientX - rect.left;
+    touchY = e.touches[0].clientY - rect.top;
+});
+canvas.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    isTouching = false;
+    touchX = null;
+    touchY = null;
+});
+
+const shieldBtn = document.getElementById('shieldBtn');
+shieldBtn.addEventListener('touchstart', () => { keys['e'] = true; });
+shieldBtn.addEventListener('touchend', () => { keys['e'] = false; });
+
 // Game loop
 function update() {
     if (!isGameActive) return; // Stop updating if game is not active
@@ -210,8 +239,25 @@ function update() {
         if (player.y + player.height > height) player.y = height - player.height;
     }
 
-    // Player shooting (space)
-    if (keys[' ']) {
+    // Touch movement
+    if (isTouching && touchX !== null && touchY !== null) {
+        const dx = touchX - (player.x + player.width / 2);
+        const dy = touchY - (player.y + player.height / 2);
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > 5) { // threshold to avoid jitter
+            player.x += (dx / dist) * player.speed;
+            player.y += (dy / dist) * player.speed;
+            // clamp to screen
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > width) player.x = width - player.width;
+            if (player.y < 0) player.y = 0;
+            if (player.y + player.height > height) player.y = height - player.height;
+        }
+    }
+
+    // Player shooting (space or automatic on mobile)
+    const isMobile = window.innerWidth < 768 || 'ontouchstart' in window;
+    if (keys[' '] || (isMobile && isGameActive)) {
         if (player.cooldown <= 0) {
             player.bullets.push(new Bullet(player.x + player.width / 2, player.y, -7, true));
             player.cooldown = 15; // cooldown frames
