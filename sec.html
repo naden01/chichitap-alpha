@@ -59,11 +59,32 @@
             width: 100%;
             text-align: center;
         }
+
+        .game-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+        }
+
+        .game-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 
 <body>
     <button class="back-button" onclick="goBack()">← Back</button>
+    <button class="game-button" onclick="window.location.href='h/whatisthis.html'">Game</button>
 
     <div class="video-container">
         <div>
