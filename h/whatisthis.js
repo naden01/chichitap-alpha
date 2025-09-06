@@ -59,17 +59,18 @@ function playBackgroundMusic() {
 const player = {
     x: width / 2,
     y: height - 100,
-    width: 64,
-    height: 64,
+    width: 50,
+    height: 50,
     speed: 5,
     bullets: [],
     cooldown: 0,
-    health: 100,
-    maxHealth: 100,
+    health: 150,
+    maxHealth: 150,
     shieldCooldown: 0,
     shieldActive: false,
     shieldDuration: 300, // 5 seconds at 60 FPS
-    shieldMaxCooldown: 900 // 15 seconds at 60 FPS
+    shieldMaxCooldown: 900, // 15 seconds at 60 FPS
+    homingTimer: 0
 };
 
 // Enemy object with complex movement pattern
@@ -85,10 +86,12 @@ const enemy = {
     bullets: [],
     cooldown: 0,
     moveAngle: 0,
-    health: 300,
-    maxHealth: 300,
+    health: 400,
+    maxHealth: 400,
     spellCardTimer: 0,
-    spellCardType: 1
+    spellCardType: 1,
+    shieldActive: false,
+    shieldDuration: 0
 };
 
 resize();
@@ -105,33 +108,54 @@ class Bullet {
         this.curve = curve; // curving factor
         this.angle = 0; // for curving
         this.homing = homing; // homing missile
-        this.homingSpeed = 2; // speed for homing
+        this.homingSpeed = 3; // speed for homing
         this.lifetime = homing ? 500 : Infinity;
+        this.isAlive = true;
     }
 
     update() {
         if (this.lifetime !== Infinity) {
             this.lifetime--;
-            if (this.lifetime <= 0) return;
+            if (this.lifetime <= 0) {
+                this.isAlive = false;
+                return;
+            }
         }
         if (!this.fromPlayer && this.curve !== 0) {
             this.angle += this.curve;
             this.speedX += Math.cos(this.angle) * 0.1;
             this.speedY += Math.sin(this.angle) * 0.1;
         }
-        if (this.homing && !this.fromPlayer) {
-            // Homing towards player
-            const dx = player.x + player.width / 2 - this.x;
-            const dy = player.y + player.height / 2 - this.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist > 0) {
-                this.speedX += (dx / dist) * 0.1;
-                this.speedY += (dy / dist) * 0.1;
-                // Limit speed
-                const speed = Math.sqrt(this.speedX * this.speedX + this.speedY * this.speedY);
-                if (speed > this.homingSpeed) {
-                    this.speedX = (this.speedX / speed) * this.homingSpeed;
-                    this.speedY = (this.speedY / speed) * this.homingSpeed;
+        if (this.homing) {
+            if (this.fromPlayer) {
+                // Homing towards enemy
+                const dx = enemy.x + enemy.width / 5 - this.x;
+                const dy = enemy.y + enemy.height / 5 - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > 0) {
+                    this.speedX += (dx / dist) * 0.1;
+                    this.speedY += (dy / dist) * 0.1;
+                    // Limit speed
+                    const speed = Math.sqrt(this.speedX * this.speedX + this.speedY * this.speedY);
+                    if (speed > this.homingSpeed) {
+                        this.speedX = (this.speedX / speed) * this.homingSpeed;
+                        this.speedY = (this.speedY / speed) * this.homingSpeed;
+                    }
+                }
+            } else {
+                // Homing towards player
+                const dx = player.x + player.width / 2 - this.x;
+                const dy = player.y + player.height / 2 - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > 0) {
+                    this.speedX += (dx / dist) * 0.1;
+                    this.speedY += (dy / dist) * 0.1;
+                    // Limit speed
+                    const speed = Math.sqrt(this.speedX * this.speedX + this.speedY * this.speedY);
+                    if (speed > this.homingSpeed) {
+                        this.speedX = (this.speedX / speed) * this.homingSpeed;
+                        this.speedY = (this.speedY / speed) * this.homingSpeed;
+                    }
                 }
             }
         }
@@ -211,13 +235,20 @@ function update() {
         }
     }
 
+    // Player homing missile every 10 seconds
+    player.homingTimer++;
+    if (player.homingTimer >= 600) {
+        player.bullets.push(new Bullet(player.x + player.width / 2, player.y, -7, true, null, 0, true));
+        player.homingTimer = 0;
+    }
+
     // Enemy movement logic
     enemy.moveAngle += 0.03;
     if (!enemy.moveSet) enemy.moveSet = 1;
     if (!enemy.moveSetTimer) enemy.moveSetTimer = 0;
     enemy.moveSetTimer++;
     if (enemy.moveSetTimer > 300) {
-        enemy.moveSet = Math.floor(Math.random() * 5) + 1; // randomly choose 1 to 5
+        enemy.moveSet = Math.floor(Math.random() * 7) + 1; // randomly choose 1 to 7
         enemy.moveSetTimer = 0;
     }
 
@@ -241,6 +272,14 @@ function update() {
         // New move set 5: slow circular with vertical bob
         enemy.x = enemy.baseX + Math.cos(enemy.moveAngle) * 80;
         enemy.y = enemy.baseY + Math.sin(enemy.moveAngle * 2) * 100;
+    } else if (enemy.moveSet === 6) {
+        // Figure-8 movement
+        enemy.x = enemy.baseX + Math.sin(enemy.moveAngle) * 100;
+        enemy.y = enemy.baseY + Math.sin(enemy.moveAngle * 2) * 50;
+    } else if (enemy.moveSet === 7) {
+        // Oscillating vertical movement
+        enemy.x = enemy.baseX + Math.sin(enemy.moveAngle) * 150;
+        enemy.y = enemy.baseY + Math.cos(enemy.moveAngle * 3) * 80;
     }
 
     // Enemy shooting bullet pattern
@@ -281,11 +320,13 @@ function update() {
                 const angle = (Math.PI * 2 / bulletCount) * i; // spread out
                 const speedX = 1 * Math.cos(angle);
                 const speedY = 1 * Math.sin(angle);
-                const color = 'purple'; // distinct color for homing
+                const color = 'lightblue'; // distinct color for homing
                 enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color, 0, true));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
             }
-            enemy.cooldown = 150; // longer cooldown for homing
+            enemy.cooldown = 200; // longer cooldown for homing
+            enemy.shieldActive = true;
+            enemy.shieldDuration = 300; // 5 seconds
         }
     } else if (enemy.moveSet === 4) {
         // ring of bullets
@@ -297,7 +338,7 @@ function update() {
                     const angle = i * angleStep;
                     const speedX = 5 * Math.cos(angle);
                     const speedY = 5 * Math.sin(angle);
-                    const color = 'green'; // distinct color
+                    const color = 'lime'; // distinct color
                     enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color));
                     enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
                 }
@@ -318,6 +359,36 @@ function update() {
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
             }
             enemy.cooldown = 120; // cooldown frames
+        }
+    } else if (enemy.moveSet === 6) {
+        // Fan of bullets
+        if (enemy.cooldown <= 0) {
+            const bulletCount = 16;
+            const angleStep = (Math.PI * 2) / bulletCount;
+            for (let i = 0; i < bulletCount; i++) {
+                const angle = i * angleStep;
+                const speedX = 4 * Math.cos(angle);
+                const speedY = 4 * Math.sin(angle);
+                const color = 'pink'; // distinct color
+                enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color));
+                enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
+            }
+            enemy.cooldown = 110; // cooldown frames
+        }
+    } else if (enemy.moveSet === 7) {
+        // Curving wave with different parameters
+        if (enemy.cooldown <= 0) {
+            const bulletCount = 30;
+            const angleStep = (Math.PI * 2) / bulletCount;
+            for (let i = 0; i < bulletCount; i++) {
+                const angle = i * angleStep;
+                const speedX = 4 * Math.cos(angle);
+                const speedY = 4 * Math.sin(angle);
+                const color = 'teal'; // distinct color
+                enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color, 0.08, false)); // slight curve
+                enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
+            }
+            enemy.cooldown = 130; // cooldown frames
         }
     }
     if (enemy.cooldown > 0) enemy.cooldown--;
@@ -351,7 +422,7 @@ function update() {
             }
         } else if (enemy.spellCardType === 3) {
             //rotating spiral bullets
-            const spiralCount = 60;
+            const spiralCount = 50;
             const spiralRadius = 150;
             const centerX = enemy.x + enemy.width / 2;
             const centerY = enemy.y + enemy.height;
@@ -427,7 +498,7 @@ function update() {
             }
         } else if (enemy.spellCardType === 9) {
             //Fantasy Heaven (dense bullet hell)
-            const heavenCount = 80;
+            const heavenCount = 72;
             for (let i = 0; i < heavenCount; i++) {
                 const angle = Math.random() * Math.PI * 2;
                 const speedX = (3 + Math.random() * 3) * Math.cos(angle);
@@ -460,10 +531,10 @@ function update() {
 
     // Update bullets
     player.bullets.forEach(b => b.update());
-    player.bullets = player.bullets.filter(b => !b.isOffScreen());
+    player.bullets = player.bullets.filter(b => b.isAlive && !b.isOffScreen());
 
     enemy.bullets.forEach(b => b.update());
-    enemy.bullets = enemy.bullets.filter(b => !b.isOffScreen());
+    enemy.bullets = enemy.bullets.filter(b => b.isAlive && !b.isOffScreen());
 
     // Collision detection
     // Player bullets hitting enemy
@@ -507,6 +578,7 @@ function resetGame() {
     player.shieldCooldown = 0;
     player.shieldActive = false;
     player.shieldDuration = 300;
+    player.homingTimer = 0;
 
     enemy.x = width / 2;
     enemy.y = 50;
@@ -623,6 +695,3 @@ function gameWin() {
     document.querySelector('#winScreen h1').textContent = 'You win from watercatlon!';
     isGameActive = false; // Stop game
 }
-
-// Update the places where redirect was done to call these functions instead
-// In update() function, replace window.location.href with gameOver() or gameWin()
