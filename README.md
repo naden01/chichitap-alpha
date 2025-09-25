@@ -1,5 +1,2 @@
-# chichitap-alpha
-https://naden01.github.io/chichitap-alpha/
-
-<h1>to-do</h1>
-i dont remember to much to do
+<h1 align="center"> Chichi Tap</h1>
+<h3 align="center">Simple Tapping Game Inspired by Famous cat Named ChiChi</h3>
