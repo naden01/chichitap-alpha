@@ -5,8 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>watercatlon</title>
-    <link rel="icon" href="splash/chichi.png" type="image/png" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="/splash/chichi.png" type="image/png" />
+    <link rel="stylesheet" href="/style.css" />
     <style>
         .video-container {
             display: flex;
@@ -84,13 +84,13 @@
 
 <body>
     <button class="back-button" onclick="goBack()">← Back</button>
-    <button class="game-button" onclick="window.location.href='h/whatisthis.html'">Game</button>
+    <button class="game-button" onclick="window.location.href='whatisthis.html'">Game</button>
 
     <div class="video-container">
         <div>
             <div class="video-wrapper">
                 <video controls autoplay muted loop>
-                    <source src="music/watercatmelon.mp4" type="video/mp4">
+                    <source src="../music/watercatmelon.mp4" type="video/mp4">
                 </video>
             </div>
         </div>
@@ -102,7 +102,7 @@
     </div>
     <script>
         function goBack() {
-            window.location.href = 'index.html';
+            window.location.href = '../index.html';
         }
 
         // play and pause
