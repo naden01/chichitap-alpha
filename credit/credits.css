@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: url('/image/chichi.png') no-repeat center center fixed;
+    background: url('../image/chichi.png') no-repeat center center fixed;
     background-size: cover;
     min-height: 100vh;
     display: flex;
@@ -24,7 +24,7 @@ body::before {
     left: 50%;
     width: 250vw;
     height: 250vh;
-    background-image: url('/image/chichi.png');
+    background-image: url('../image/chichi.png');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
