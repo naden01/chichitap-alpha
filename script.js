@@ -40,12 +40,6 @@ function formatTime(seconds) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-function formatTime(seconds) {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
-
 // Initialize music
 function initMusic() {
     backgroundMusic = new Audio('music/bg_music.mp3');
@@ -185,7 +179,7 @@ function createConfetti(x, y) {
         'splash/uhh.png',
         'splash/abcd.png',
     ];
-    const confettiCount = 10;
+    const confettiCount = 5;
     const confettiContainer = document.createElement('div');
     confettiContainer.style.position = 'absolute';
     confettiContainer.style.left = x + 'px';

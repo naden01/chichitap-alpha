@@ -25,6 +25,12 @@ function resize() {
 }
 window.addEventListener('resize', resize);
 
+const startGameBtn = document.getElementById('startGameBtn');
+const winScreen = document.getElementById('winScreen');
+const backToMainBtn = document.getElementById('backToMainBtn');
+
+startGameBtn.disabled = true; // disable start button until images load
+
 // Load images
 const playerImg = new Image();
 playerImg.src = '../splash/chichi.png';
@@ -61,11 +67,11 @@ const player = {
     y: height - 100,
     width: 50,
     height: 50,
-    speed: 5,
+    speed: 7,
     bullets: [],
     cooldown: 0,
-    health: 150,
-    maxHealth: 150,
+    health: 170,
+    maxHealth: 170,
     shieldCooldown: 0,
     shieldActive: false,
     shieldDuration: 300, // 5 seconds at 60 FPS
@@ -91,7 +97,9 @@ const enemy = {
     spellCardTimer: 0,
     spellCardType: 1,
     shieldActive: false,
-    shieldDuration: 0
+    shieldDuration: 0,
+    usedMoveSets: new Set(),
+    usedSpellCards: new Set()
 };
 
 resize();
@@ -289,43 +297,49 @@ function update() {
     }
 
     // Enemy movement logic
-    enemy.moveAngle += 0.03;
+    enemy.moveAngle += 0.05;
     if (!enemy.moveSet) enemy.moveSet = 1;
     if (!enemy.moveSetTimer) enemy.moveSetTimer = 0;
     enemy.moveSetTimer++;
     if (enemy.moveSetTimer > 300) {
-        enemy.moveSet = Math.floor(Math.random() * 7) + 1; // randomly choose 1 to 7
+        let available = [1,2,3,4,5,6,7].filter(m => !enemy.usedMoveSets.has(m));
+        if (available.length === 0) {
+            enemy.usedMoveSets.clear();
+            available = [1,2,3,4,5,6,7];
+        }
+        enemy.moveSet = available[Math.floor(Math.random() * available.length)];
+        enemy.usedMoveSets.add(enemy.moveSet);
         enemy.moveSetTimer = 0;
     }
 
     if (enemy.moveSet === 1) {
         // erratic zigzagging
-        enemy.x = enemy.baseX + Math.sin(enemy.moveAngle) * 120 + Math.cos(enemy.moveAngle * 3) * 50;
-        enemy.y = enemy.baseY + Math.sin(enemy.moveAngle * 2) * 80;
+        enemy.x = enemy.baseX + Math.sin(enemy.moveAngle) * 140 + Math.cos(enemy.moveAngle * 3) * 60;
+        enemy.y = enemy.baseY + Math.sin(enemy.moveAngle * 2) * 100;
     } else if (enemy.moveSet === 2) {
         // Burst shooting moveset: simple circular movement
-        enemy.x = enemy.baseX + Math.cos(enemy.moveAngle) * 100;
-        enemy.y = enemy.baseY + Math.sin(enemy.moveAngle) * 50;
+        enemy.x = enemy.baseX + Math.cos(enemy.moveAngle) * 120;
+        enemy.y = enemy.baseY + Math.sin(enemy.moveAngle) * 60;
     } else if (enemy.moveSet === 3) {
         // Homing missile moveset: stationary
         enemy.x = enemy.baseX;
         enemy.y = enemy.baseY;
     } else if (enemy.moveSet === 4) {
         // New move set 4: fast horizontal zigzag
-        enemy.x = enemy.baseX + Math.sin(enemy.moveAngle * 10) * 150;
-        enemy.y = enemy.baseY + Math.cos(enemy.moveAngle * 5) * 30;
+        enemy.x = enemy.baseX + Math.sin(enemy.moveAngle * 10) * 180;
+        enemy.y = enemy.baseY + Math.cos(enemy.moveAngle * 5) * 40;
     } else if (enemy.moveSet === 5) {
         // New move set 5: slow circular with vertical bob
-        enemy.x = enemy.baseX + Math.cos(enemy.moveAngle) * 80;
-        enemy.y = enemy.baseY + Math.sin(enemy.moveAngle * 2) * 100;
+        enemy.x = enemy.baseX + Math.cos(enemy.moveAngle) * 100;
+        enemy.y = enemy.baseY + Math.sin(enemy.moveAngle * 2) * 120;
     } else if (enemy.moveSet === 6) {
         // Figure-8 movement
-        enemy.x = enemy.baseX + Math.sin(enemy.moveAngle) * 100;
-        enemy.y = enemy.baseY + Math.sin(enemy.moveAngle * 2) * 50;
+        enemy.x = enemy.baseX + Math.sin(enemy.moveAngle) * 120;
+        enemy.y = enemy.baseY + Math.sin(enemy.moveAngle * 2) * 60;
     } else if (enemy.moveSet === 7) {
         // Oscillating vertical movement
-        enemy.x = enemy.baseX + Math.sin(enemy.moveAngle) * 150;
-        enemy.y = enemy.baseY + Math.cos(enemy.moveAngle * 3) * 80;
+        enemy.x = enemy.baseX + Math.sin(enemy.moveAngle) * 180;
+        enemy.y = enemy.baseY + Math.cos(enemy.moveAngle * 3) * 100;
     }
 
     // Enemy shooting bullet pattern
@@ -336,13 +350,13 @@ function update() {
             const angleStep = (Math.PI * 2) / bulletCount; // full circle
             for (let i = 0; i < bulletCount; i++) {
                 const angle = i * angleStep; // 0 to 2*PI
-                const speedX = 4 * Math.cos(angle);
-                const speedY = 4 * Math.sin(angle);
+                const speedX = 5 * Math.cos(angle);
+                const speedY = 5 * Math.sin(angle);
                 const color = i % 2 === 0 ? 'red' : 'blue'; // alternate red and blue
                 enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX; // add horizontal speed
             }
-            enemy.cooldown = 120; // cooldown frames
+            enemy.cooldown = 90; // cooldown frames
         }
     } else if (enemy.moveSet === 2) {
         // Burst shoot
@@ -350,13 +364,13 @@ function update() {
             const bulletCount = 40;
             for (let i = 0; i < bulletCount; i++) {
                 const angle = Math.random() * Math.PI * 2; // random direction
-                const speedX = 3 * Math.cos(angle);
-                const speedY = 3 * Math.sin(angle);
+                const speedX = 4 * Math.cos(angle);
+                const speedY = 4 * Math.sin(angle);
                 const color = Math.random() > 0.5 ? 'red' : 'blue';
                 enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
             }
-            enemy.cooldown = 60; // shorter cooldown for bursts
+            enemy.cooldown = 45; // shorter cooldown for bursts
         }
     } else if (enemy.moveSet === 3) {
         // Homing missiles
@@ -364,13 +378,13 @@ function update() {
             const bulletCount = 6;
             for (let i = 0; i < bulletCount; i++) {
                 const angle = (Math.PI * 2 / bulletCount) * i; // spread out
-                const speedX = 1 * Math.cos(angle);
-                const speedY = 1 * Math.sin(angle);
+                const speedX = 2 * Math.cos(angle);
+                const speedY = 2 * Math.sin(angle);
                 const color = 'lightblue'; // distinct color for homing
                 enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color, 0, true));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
             }
-            enemy.cooldown = 200; // longer cooldown for homing
+            enemy.cooldown = 150; // longer cooldown for homing
             enemy.shieldActive = true;
             enemy.shieldDuration = 300; // 5 seconds
         }
@@ -382,14 +396,14 @@ function update() {
             for (let i = 0; i < bulletCount; i++) {
                 if (i % 4 !== 0) { // skip every 4th bullet to create gaps
                     const angle = i * angleStep;
-                    const speedX = 5 * Math.cos(angle);
-                    const speedY = 5 * Math.sin(angle);
+                    const speedX = 6 * Math.cos(angle);
+                    const speedY = 6 * Math.sin(angle);
                     const color = 'lime'; // distinct color
                     enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color));
                     enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
                 }
             }
-            enemy.cooldown = 100; // moderate cooldown
+            enemy.cooldown = 80; // moderate cooldown
         }
     } else if (enemy.moveSet === 5) {
         // Curving wave
@@ -398,13 +412,13 @@ function update() {
             const angleStep = (Math.PI * 2) / bulletCount;
             for (let i = 0; i < bulletCount; i++) {
                 const angle = i * angleStep;
-                const speedX = 4 * Math.cos(angle);
-                const speedY = 4 * Math.sin(angle);
+                const speedX = 5 * Math.cos(angle);
+                const speedY = 5 * Math.sin(angle);
                 const color = 'orange'; // distinct color
                 enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color, 0.05, false)); // slight curve
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
             }
-            enemy.cooldown = 120; // cooldown frames
+            enemy.cooldown = 90; // cooldown frames
         }
     } else if (enemy.moveSet === 6) {
         // Fan of bullets
@@ -413,13 +427,13 @@ function update() {
             const angleStep = (Math.PI * 2) / bulletCount;
             for (let i = 0; i < bulletCount; i++) {
                 const angle = i * angleStep;
-                const speedX = 4 * Math.cos(angle);
-                const speedY = 4 * Math.sin(angle);
+                const speedX = 5 * Math.cos(angle);
+                const speedY = 5 * Math.sin(angle);
                 const color = 'pink'; // distinct color
                 enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
             }
-            enemy.cooldown = 110; // cooldown frames
+            enemy.cooldown = 85; // cooldown frames
         }
     } else if (enemy.moveSet === 7) {
         // Curving wave with different parameters
@@ -428,29 +442,29 @@ function update() {
             const angleStep = (Math.PI * 2) / bulletCount;
             for (let i = 0; i < bulletCount; i++) {
                 const angle = i * angleStep;
-                const speedX = 4 * Math.cos(angle);
-                const speedY = 4 * Math.sin(angle);
+                const speedX = 5 * Math.cos(angle);
+                const speedY = 5 * Math.sin(angle);
                 const color = 'teal'; // distinct color
                 enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color, 0.08, false)); // slight curve
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
             }
-            enemy.cooldown = 130; // cooldown frames
+            enemy.cooldown = 100; // cooldown frames
         }
     }
     if (enemy.cooldown > 0) enemy.cooldown--;
 
     // Spell card timer
     enemy.spellCardTimer++;
-    if (enemy.spellCardTimer > 600) { // every 10 seconds
+    if (enemy.spellCardTimer > 600 ) { // every 10 seconds 600
         // Cycle through multiple spell cards
         if (enemy.spellCardType === 1) {
             //barrage of knives
-            const knifeCount = 48;
+            const knifeCount = 68;
             const angleStep = (Math.PI * 2) / knifeCount;
             for (let i = 0; i < knifeCount; i++) {
                 const angle = i * angleStep;
-                const speedX = 6 * Math.cos(angle);
-                const speedY = 6 * Math.sin(angle);
+                const speedX = 7 * Math.cos(angle);
+                const speedY = 7 * Math.sin(angle);
                 const color = 'silver'; // knife color
                 enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
@@ -460,15 +474,15 @@ function update() {
             const crystalCount = 32;
             for (let i = 0; i < crystalCount; i++) {
                 const angle = (Math.PI * 2 / crystalCount) * i;
-                const speedX = 5 * Math.cos(angle);
-                const speedY = 5 * Math.sin(angle);
+                const speedX = 6 * Math.cos(angle);
+                const speedY = 6 * Math.sin(angle);
                 const color = 'cyan'; // ice color
                 enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
             }
         } else if (enemy.spellCardType === 3) {
             //rotating spiral bullets
-            const spiralCount = 50;
+            const spiralCount = 70;
             const spiralRadius = 150;
             const centerX = enemy.x + enemy.width / 2;
             const centerY = enemy.y + enemy.height;
@@ -476,19 +490,19 @@ function update() {
                 const angle = i * 0.3 + enemy.spellCardTimer * 0.05;
                 const x = centerX + spiralRadius * Math.cos(angle);
                 const y = centerY + spiralRadius * Math.sin(angle);
-                const speedX = -3 * Math.sin(angle);
-                const speedY = 3 * Math.cos(angle);
+                const speedX = -4 * Math.sin(angle);
+                const speedY = 4 * Math.cos(angle);
                 const color = 'magenta';
                 enemy.bullets.push(new Bullet(x, y, speedY, false, color));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
             }
         } else if (enemy.spellCardType === 4) {
             //curving moon bullets
-            const moonCount = 40;
+            const moonCount = 45;
             for (let i = 0; i < moonCount; i++) {
                 const angle = (Math.PI * 2 / moonCount) * i;
-                const speedX = 4 * Math.cos(angle);
-                const speedY = 4 * Math.sin(angle);
+                const speedX = 5 * Math.cos(angle);
+                const speedY = 5 * Math.sin(angle);
                 const color = 'yellow'; // moon color
                 enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color, 0.1, false));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
@@ -498,8 +512,8 @@ function update() {
             const knifeCount = 46;
             for (let i = 0; i < knifeCount; i++) {
                 const angle = (Math.PI * 2 / knifeCount) * i;
-                const speedX = 5 * Math.cos(angle);
-                const speedY = 5 * Math.sin(angle);
+                const speedX = 6 * Math.cos(angle);
+                const speedY = 6 * Math.sin(angle);
                 const color = 'silver'; // knife color
                 enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color, 0.05, false));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
@@ -509,8 +523,8 @@ function update() {
             const starCount = 36;
             for (let i = 0; i < starCount; i++) {
                 const angle = (Math.PI * 2 / starCount) * i;
-                const speedX = 4 * Math.cos(angle);
-                const speedY = 4 * Math.sin(angle);
+                const speedX = 5 * Math.cos(angle);
+                const speedY = 5 * Math.sin(angle);
                 const color = 'gold'; // star color
                 enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
@@ -525,19 +539,19 @@ function update() {
                 const angle = i * 0.25 + enemy.spellCardTimer * 0.1;
                 const x = centerX + spiralRadius * Math.cos(angle);
                 const y = centerY + spiralRadius * Math.sin(angle);
-                const speedX = -4 * Math.sin(angle);
-                const speedY = 4 * Math.cos(angle);
+                const speedX = -5 * Math.sin(angle);
+                const speedY = 5 * Math.cos(angle);
                 const color = 'orange';
                 enemy.bullets.push(new Bullet(x, y, speedY, false, color));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
             }
         } else if (enemy.spellCardType === 8) {
             //Master Spark (wide laser barrage)
-            const laserCount = 20;
+            const laserCount = 30;
             for (let i = 0; i < laserCount; i++) {
                 const angle = (Math.PI / laserCount) * i - Math.PI / 2;
-                const speedX = 6 * Math.cos(angle);
-                const speedY = 6 * Math.sin(angle);
+                const speedX = 7 * Math.cos(angle);
+                const speedY = 7 * Math.sin(angle);
                 const color = 'yellow';
                 enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
@@ -547,8 +561,8 @@ function update() {
             const heavenCount = 72;
             for (let i = 0; i < heavenCount; i++) {
                 const angle = Math.random() * Math.PI * 2;
-                const speedX = (3 + Math.random() * 3) * Math.cos(angle);
-                const speedY = (3 + Math.random() * 3) * Math.sin(angle);
+                const speedX = (4 + Math.random() * 4) * Math.cos(angle);
+                const speedY = (4 + Math.random() * 4) * Math.sin(angle);
                 const color = Math.random() > 0.5 ? 'red' : 'blue';
                 enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
@@ -563,15 +577,21 @@ function update() {
                 const angle = i * 0.22 + enemy.spellCardTimer * 0.08;
                 const x = centerX + redRadius * Math.cos(angle);
                 const y = centerY + redRadius * Math.sin(angle);
-                const speedX = -5 * Math.sin(angle);
-                const speedY = 5 * Math.cos(angle);
+                const speedX = -6 * Math.sin(angle);
+                const speedY = 6 * Math.cos(angle);
                 const color = 'red';
                 enemy.bullets.push(new Bullet(x, y, speedY, false, color));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
             }
         }
         enemy.spellCardTimer = 0;
-        enemy.spellCardType = Math.floor(Math.random() * 10) + 1;
+        let availableSpells = [1,2,3,4,5,6,7,8,9,10].filter(s => !enemy.usedSpellCards.has(s));
+        if (availableSpells.length === 0) {
+            enemy.usedSpellCards.clear();
+            availableSpells = [1,2,3,4,5,6,7,8,9,10];
+        }
+        enemy.spellCardType = availableSpells[Math.floor(Math.random() * availableSpells.length)];
+        enemy.usedSpellCards.add(enemy.spellCardType);
     }
     if (enemy.cooldown > 0) enemy.cooldown--;
 
@@ -632,6 +652,9 @@ function resetGame() {
     enemy.cooldown = 0;
     enemy.health = enemy.maxHealth; // reset health properly
     enemy.spellCardTimer = 0; // reset spell card timer
+    enemy.usedMoveSets.clear();
+    enemy.usedSpellCards.clear();
+    enemy.moveSet = 1; // reset to initial move set
 
     // Clear keys to prevent repeated alerts on holding keys
     for (let key in keys) {
@@ -702,17 +725,74 @@ function draw() {
     }
 }
 
+function updateBullets() {
+    // Update and filter player bullets
+    player.bullets = player.bullets.filter(b => {
+        b.update();
+        if (b.isOffScreen()) return false;
+
+        // Check collision with enemy
+        if (b.x > enemy.x && b.x < enemy.x + enemy.width &&
+            b.y > enemy.y && b.y < enemy.y + enemy.height) {
+            enemy.health -= 10;
+            shake = 5; // Screen shake on hit
+            if (enemy.health <= 0) {
+                gameWin();
+            }
+            return false;
+        }
+        return true;
+    });
+
+    // Update and filter enemy bullets
+    enemy.bullets = enemy.bullets.filter(b => {
+        b.update();
+        if (b.isOffScreen()) return false;
+
+        // Check collision with player
+        if (!player.shieldActive && b.x > player.x && b.x < player.x + player.width &&
+            b.y > player.y && b.y < player.y + player.height) {
+            player.health -= 20;
+            shake = 5; // Screen shake on hit
+            if (player.health <= 0) {
+                gameOver();
+            }
+            return false;
+        }
+        return true;
+    });
+}
+
+function updateEnemy() {
+    // Faster sinusoidal movement
+    enemy.x = enemy.baseX + Math.sin(Date.now() / 300) * 120 * enemy.direction;
+    if (enemy.x < 0) enemy.x = 0;
+    if (enemy.x > width - enemy.width) {
+        enemy.x = width - enemy.width;
+        enemy.direction *= -1;
+    }
+
+    // Enemy shooting
+    if (enemy.cooldown <= 0) {
+        // Shoot straight down
+        enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, 4, false, 'red'));
+        // Shoot angled
+        for (let i = -1; i <= 1; i += 2) {
+            enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, 4, false, 'orange', i * 0.1));
+        }
+        enemy.cooldown = 45; // Shoot more frequently
+    }
+    if (enemy.cooldown > 0) enemy.cooldown--;
+}
+
 function gameLoop() {
-    update();
+    if (isGameActive) {
+        update();
+        updateBullets();
+    }
     draw();
     requestAnimationFrame(gameLoop);
 }
-
-const startGameBtn = document.getElementById('startGameBtn');
-const winScreen = document.getElementById('winScreen');
-const backToMainBtn = document.getElementById('backToMainBtn');
-
-startGameBtn.disabled = true; // disable start button until images load
 
 startGameBtn.addEventListener('click', () => {
     console.log('Start button clicked');
