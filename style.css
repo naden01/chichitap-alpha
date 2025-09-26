@@ -149,17 +149,61 @@ a {
     margin-top: 2rem;
 }
 
-.dropup {
-    width: 50px;
-    height: 50px;
-    top: 400px;
-    right: 265px;
+.dropup-container {
+    position: fixed;
+    bottom: 40px;
+/* i found this on https://www.fluid-type-scale.com/ */
+--fs-sm: clamp(0.8rem, 41.17vi + -9.49rem, 23.44rem);
+--fs-base: clamp(1rem, 55vi + -12.75rem, 31.25rem);
+--fs-md: clamp(1.25rem, 73.47vi + -17.12rem, 41.66rem);
+--fs-lg: clamp(1.56rem, 98.12vi + -22.97rem, 55.53rem);
+--fs-xl: clamp(1.95rem, 131.03vi + -30.8rem, 74.02rem);
+--fs-xxl: clamp(2.44rem, 174.96vi + -41.3rem, 98.67rem);
+--fs-xxxl: clamp(3.05rem, 233.58vi + -55.34rem, 131.52rem);
+}
+
+.dropupbtn {
+    width: 500px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: #4A443E;
     background-size: cover;
     background-position: center;
-    background-color: transparent;
     position: relative;
     border: none;
+    border-radius: 15px;
     cursor: pointer;
+}
+
+.dropupbtn:hover, .dropup:focus {
+    position: relative;
+    background-color: #504b46;
+}
+
+.dropup-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    bottom: 100%; /* Open upwards */
+    min-width: 500px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropup-content a {
+    color: black;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+}
+
+.dropup-content a:hover {
+    background-color: #ddd;
+}
+
+.show {
+    display: block;
 }
 .btn {
     background: linear-gradient(45deg, #8999dd, #69e0e9);
