@@ -67,7 +67,7 @@ const player = {
     y: height - 100,
     width: 50,
     height: 50,
-    speed: 7,
+    speed: 5,
     bullets: [],
     cooldown: 0,
     health: 170,
@@ -297,7 +297,7 @@ function update() {
     }
 
     // Enemy movement logic
-    enemy.moveAngle += 0.05;
+    enemy.moveAngle += 0.04;
     if (!enemy.moveSet) enemy.moveSet = 1;
     if (!enemy.moveSetTimer) enemy.moveSetTimer = 0;
     enemy.moveSetTimer++;
@@ -378,8 +378,8 @@ function update() {
             const bulletCount = 6;
             for (let i = 0; i < bulletCount; i++) {
                 const angle = (Math.PI * 2 / bulletCount) * i; // spread out
-                const speedX = 2 * Math.cos(angle);
-                const speedY = 2 * Math.sin(angle);
+                const speedX = 4 * Math.cos(angle);
+                const speedY = 4 * Math.sin(angle);
                 const color = 'lightblue'; // distinct color for homing
                 enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color, 0, true));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
@@ -396,8 +396,8 @@ function update() {
             for (let i = 0; i < bulletCount; i++) {
                 if (i % 4 !== 0) { // skip every 4th bullet to create gaps
                     const angle = i * angleStep;
-                    const speedX = 6 * Math.cos(angle);
-                    const speedY = 6 * Math.sin(angle);
+                    const speedX = 4 * Math.cos(angle);
+                    const speedY = 4 * Math.sin(angle);
                     const color = 'lime'; // distinct color
                     enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, speedY, false, color));
                     enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
@@ -490,8 +490,8 @@ function update() {
                 const angle = i * 0.3 + enemy.spellCardTimer * 0.05;
                 const x = centerX + spiralRadius * Math.cos(angle);
                 const y = centerY + spiralRadius * Math.sin(angle);
-                const speedX = -4 * Math.sin(angle);
-                const speedY = 4 * Math.cos(angle);
+                const speedX = -5 * Math.sin(angle);
+                const speedY = 5 * Math.cos(angle);
                 const color = 'magenta';
                 enemy.bullets.push(new Bullet(x, y, speedY, false, color));
                 enemy.bullets[enemy.bullets.length - 1].speedX = speedX;
@@ -725,70 +725,10 @@ function draw() {
     }
 }
 
-function updateBullets() {
-    // Update and filter player bullets
-    player.bullets = player.bullets.filter(b => {
-        b.update();
-        if (b.isOffScreen()) return false;
-
-        // Check collision with enemy
-        if (b.x > enemy.x && b.x < enemy.x + enemy.width &&
-            b.y > enemy.y && b.y < enemy.y + enemy.height) {
-            enemy.health -= 10;
-            shake = 5; // Screen shake on hit
-            if (enemy.health <= 0) {
-                gameWin();
-            }
-            return false;
-        }
-        return true;
-    });
-
-    // Update and filter enemy bullets
-    enemy.bullets = enemy.bullets.filter(b => {
-        b.update();
-        if (b.isOffScreen()) return false;
-
-        // Check collision with player
-        if (!player.shieldActive && b.x > player.x && b.x < player.x + player.width &&
-            b.y > player.y && b.y < player.y + player.height) {
-            player.health -= 20;
-            shake = 5; // Screen shake on hit
-            if (player.health <= 0) {
-                gameOver();
-            }
-            return false;
-        }
-        return true;
-    });
-}
-
-function updateEnemy() {
-    // Faster sinusoidal movement
-    enemy.x = enemy.baseX + Math.sin(Date.now() / 300) * 120 * enemy.direction;
-    if (enemy.x < 0) enemy.x = 0;
-    if (enemy.x > width - enemy.width) {
-        enemy.x = width - enemy.width;
-        enemy.direction *= -1;
-    }
-
-    // Enemy shooting
-    if (enemy.cooldown <= 0) {
-        // Shoot straight down
-        enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, 4, false, 'red'));
-        // Shoot angled
-        for (let i = -1; i <= 1; i += 2) {
-            enemy.bullets.push(new Bullet(enemy.x + enemy.width / 2, enemy.y + enemy.height, 4, false, 'orange', i * 0.1));
-        }
-        enemy.cooldown = 45; // Shoot more frequently
-    }
-    if (enemy.cooldown > 0) enemy.cooldown--;
-}
 
 function gameLoop() {
     if (isGameActive) {
         update();
-        updateBullets();
     }
     draw();
     requestAnimationFrame(gameLoop);
