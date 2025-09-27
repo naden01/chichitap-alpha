@@ -183,15 +183,17 @@ a {
 .dropup-content {
     display: none;
     position: absolute;
-    background-color: #f1f1f1;
+    background-color: #4A443E;
     bottom: 100%; /* Open upwards */
     min-width: 500px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
+    border-radius: 15px;
+    animation: ease-in-out 0.3s;
 }
 
 .dropup-content a {
-    color: black;
+    color: #f1f1f1;
     padding: 20px;
     text-align: center;
     text-decoration: none;
@@ -199,12 +201,14 @@ a {
 }
 
 .dropup-content a:hover {
-    background-color: #ddd;
+    background-color: #524c46;
+    border-radius: 15px;
 }
 
 .show {
     display: block;
 }
+
 .btn {
     background: linear-gradient(45deg, #8999dd, #69e0e9);
     color: white;
