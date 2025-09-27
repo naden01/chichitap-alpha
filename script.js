@@ -18,7 +18,12 @@ const meowSounds = [
     'sounds/meow1.mp3',
     'sounds/meow2.mp3',
     'sounds/meow3.mp3',
-    'sounds/meow4.mp3'
+    'sounds/meow4.mp3',
+    'sounds/meow6.mp3',
+    'sounds/meow7.mp3',
+    'sounds/meow8.mp3',
+    'sounds/meow9.mp3',
+    'sounds/meow10.mp3',
 ];
 
 // DOM elements
